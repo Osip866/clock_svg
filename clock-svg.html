@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <svg id="svg" height="500" width="800"></svg>
+    <script>
+        const svgNS = "http://www.w3.org/2000/svg";
+
+
+        const svg = document.getElementById("svg");
+
+        const w = parseFloat(svg.getAttributeNS(null, "width"));
+        const h = parseFloat(svg.getAttributeNS(null, "height"));
+        // создаем желтый циферблат
+        let circle = document.createElementNS(svgNS, "circle");
+        circle.setAttributeNS(null, "cx", w / 2);
+        circle.setAttributeNS(null, "cy", h / 2);
+        circle.setAttributeNS(null, "r", w > h ? h / 2 : w / 2);
+        circle.setAttributeNS(null, "fill", "yellow");
+        circle.setAttributeNS(null, "stroke", "black");
+        svg.appendChild(circle);
+
+        // создаем зеленные кружки
+        var radiusGreen = 200;
+        var yelowCenterX = w / 2;
+        var yelowCenterY = h / 2;
+        let circle2;
+        (function greenCreate() {
+            let x;
+            let y;
+
+            for (var j = 0, k = 0; j < 12, k <= 360; j++, k = k + 30) {
+                var angleGreen = parseFloat(k) / 180 * Math.PI;
+                var greenCenterX = 2 * yelowCenterX + radiusGreen * Math.sin(angleGreen);
+                var greenCenterY = 2 * yelowCenterY - radiusGreen * Math.cos(angleGreen);
+                x = Math.round(greenCenterX - w / 2);
+                y = Math.round(greenCenterY - h / 2);
+                let circle2 = document.createElementNS(svgNS, "ellipse");
+                circle2.setAttribute("stroke", "black");
+                circle2.setAttribute("fill", "green");
+                circle2.setAttribute("rx", 30);
+                circle2.setAttribute("ry", 30);
+                circle2.setAttribute("cx", x);
+                circle2.setAttribute("cy", y);
+                svg.appendChild(circle2);
+
+                // создаем цифры на зеленных кружках
+                let text = document.createElementNS(svgNS, "text");
+                text.setAttribute("stroke", "black");
+                text.setAttribute("fill", "black");
+                text.setAttribute("x", x);
+                text.setAttribute("y", y + 5);
+                text.setAttribute("font-size", "24px");
+                text.setAttribute("text-anchor", "middle");
+                text.textContent = j;
+                svg.appendChild(text);
+
+            }
+        }())
+
+        function clock() {
+            var h;
+            var m;
+            var s;
+            var date = new Date(),
+            h = date.getHours();
+            m = date.getMinutes();
+            s = date.getSeconds();
+            var hour = 30 * (h + (1 / 60) * m);
+            var minute = 6 * (m + (1 / 60) * s);
+            var second = 6 * s;
+
+            var angleS = Math.PI / 2 - second * (Math.PI / 180);
+            var angleM = Math.PI / 2 - minute * (Math.PI / 180);
+            var angleH = Math.PI / 2 - hour * (Math.PI / 180);
+
+            // выщитываем координаты секундной линии каждую секунду
+            let xSecond = yelowCenterX + (radiusGreen + 20) * Math.cos(angleS);
+            let ySecond = yelowCenterY - (radiusGreen + 20) * Math.sin(angleS);
+            line.setAttributeNS(null, "x2", xSecond);
+            line.setAttributeNS(null, "y2", ySecond);
+
+            // выщитываем координаты минутной линии каждую секунду
+            let xMinute = yelowCenterX + radiusGreen * Math.cos(angleM);
+            let yMinute = yelowCenterY - radiusGreen * Math.sin(angleM);
+            lineM.setAttributeNS(null, "x2", xMinute);
+            lineM.setAttributeNS(null, "y2", yMinute);
+
+            // выщитываем координатыx часовой линии каждую секунду
+            let xHour = yelowCenterX + (radiusGreen - 60) * Math.cos(angleH);
+            let yHour = yelowCenterY - (radiusGreen - 60) * Math.sin(angleH);
+            lineH.setAttributeNS(null, "x2", xHour);
+            lineH.setAttributeNS(null, "y2", yHour);
+
+            // Создаем функцию, что бы данные меньше 10 отображались двухзначными
+            function updateTime(a) {
+                if (a < 10) {
+                    return "0" + a;
+                } else {
+                    return a;
+                }
+            }
+            // обновляем время электронных часов каждую секунду
+            textClock.textContent = updateTime(h) + ":" + updateTime(m) + ":" + updateTime(s);
+        }
+        setInterval(clock, 1000);
+
+        // создаем секундную стрелку
+        let line = document.createElementNS(svgNS, "line");
+        line.setAttributeNS(null, "x1", yelowCenterX);
+        line.setAttributeNS(null, "y1", yelowCenterY);
+        line.setAttributeNS(null, "x2", yelowCenterX);
+        line.setAttributeNS(null, "y2", yelowCenterY);
+        line.setAttributeNS(null, "stroke", "red");
+        line.setAttributeNS(null, "stroke-width", 3);
+        svg.appendChild(line);
+
+        // создаем минутную стрелку
+        let lineM = document.createElementNS(svgNS, "line");
+        lineM.setAttributeNS(null, "x1", yelowCenterX);
+        lineM.setAttributeNS(null, "y1", yelowCenterY);
+        lineM.setAttributeNS(null, "x2", yelowCenterX);
+        lineM.setAttributeNS(null, "y2", yelowCenterY);
+        lineM.setAttributeNS(null, "stroke", "blue");
+        lineM.setAttributeNS(null, "stroke-width", 6);
+        svg.appendChild(lineM);
+
+        // создаем часовую стрелку
+        let lineH = document.createElementNS(svgNS, "line");
+        lineH.setAttributeNS(null, "x1", yelowCenterX);
+        lineH.setAttributeNS(null, "y1", yelowCenterY);
+        lineH.setAttributeNS(null, "x2", yelowCenterX);
+        lineH.setAttributeNS(null, "y2", yelowCenterY);
+        lineH.setAttributeNS(null, "stroke", "black");
+        lineH.setAttributeNS(null, "stroke-width", 10);
+        svg.appendChild(lineH);
+
+        // создаем электронные часы
+        let textClock = document.createElementNS(svgNS, "text");
+        textClock.setAttribute("stroke", "black");
+        textClock.setAttribute("fill", "aqua");
+        textClock.setAttribute("x", w / 2);
+        textClock.setAttribute("y", h / 2 - 80);
+        textClock.setAttribute("font-size", "54px");
+        textClock.setAttribute("text-anchor", "middle");
+        svg.appendChild(textClock);
+    </script>
+
+</body>
+
+</html>
